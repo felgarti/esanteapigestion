@@ -81,6 +81,7 @@ def edit_doctor(_id=None ,_nom=None, _prenom=None , _mobile=None, _address=None,
 
 def delete_doctor(id):
     doctor = get_doctor(id)
+    print(doctor.todict())
     userid = doctor.user.id
     delete_user(userid)
     doc = db.collection(u'doctors').document(id).delete()

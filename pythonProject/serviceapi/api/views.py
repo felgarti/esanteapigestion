@@ -232,3 +232,32 @@ def ed_user(request):
     admitDate = request.GET.get('admitDate')
     user = edit_user(_id=id,_nom=nom , _prenom=prenom , _mobile=mobile , _address=address , _profilepic=profile_pic , _status=status , _admitDate=admitDate)
     return JsonResponse(user.todict(), safe=False)
+
+@csrf_exempt
+@api_view(["Post"])
+def del_user(request):
+    id = request.GET.get('id')
+    delete_user(id)
+    return  JsonResponse({}, safe=False)
+
+@csrf_exempt
+@api_view(["Post"])
+def del_patient(request):
+    id = request.GET.get('id')
+    delete_patient(id)
+    return JsonResponse({}, safe=False)
+
+
+@csrf_exempt
+@api_view(["Post"])
+def del_doctor(request):
+    id = request.GET.get('id')
+    delete_doctor(id)
+    return JsonResponse({}, safe=False)
+
+@csrf_exempt
+@api_view(["Post"])
+def del_staff(request):
+    id = request.GET.get('id')
+    delete_staff(id)
+    return JsonResponse({}, safe=False)

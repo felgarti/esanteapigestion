@@ -22,10 +22,10 @@ path('edit_patient/', views.ed_patient),
 path('edit_staff/', views.ed_staff),
 path('edit_doctor/', views.ed_doctor),
 
-# path('delete_user/', views.del_user),
-# path('delete_patient/', views.del_patient),
-# path('delete_staff/', views.del_staff),
-# path('delete_doctor/', views.del_doctor)
+path('delete_user/', views.del_user),
+path('delete_patient/', views.del_patient),
+path('delete_staff/', views.del_staff),
+path('delete_doctor/', views.del_doctor)
 
 
 ]
