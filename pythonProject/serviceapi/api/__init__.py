@@ -7,8 +7,5 @@ from .Services import *
 # user = get_user("Ft19zmcRWB12AlPm4ski")
 # print(user.todict())
 #doctor=create_staff("khadija", "hihi", "0622553399", "avenues smtg", "test", "05/12/2002", "httpsfprofilepic","cardio",["tester"])
-test=get_doctor("DmONEmDuKh9AIL8KMtka")
-
-
-
-print(test.todict())
+# for i in get_users():
+#     print("doc " , i.todict())
