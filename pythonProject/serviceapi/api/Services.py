@@ -183,3 +183,82 @@ def delete_staff(id):
     delete_user(userid)
     doc = db.collection(u'staff').document(id).delete()
     print("deleted successfully")
+
+def get_userByName(s=""):
+    s = s.strip()
+    if(s==""):
+        return
+    users=get_users()
+    users1=[]
+    for user in users :
+        if(user.nom.find(s)!=-1 or user.prenom.find(s)!=-1):
+            users1.append(user)
+    return users1
+
+
+
+
+
+def get_patientByName(s):
+    s = s.strip()
+    if s == "":
+        return
+    patients=get_patients()
+    patients1=[]
+    for patient in patients:
+        if (patient.user.nom.find(s)!=-1 or patient.user.prenom.find(s)!=-1):
+            patients1.append(patient)
+    return patients1
+
+def get_doctorByName(s):
+    s = s.strip()
+    if s == "":
+        return
+    doctors=get_doctors()
+    doctors1=[]
+    for doctor in doctors:
+        if (doctor.user.nom.find(s)!=-1 or doctor.user.prenom.find(s)!=-1):
+            doctors1.append(doctor)
+    return doctors1
+
+def get_staffByName(s):
+    s = s.strip()
+    if s == "":
+        return
+    staffs=get_staffs()
+    staffs1=[]
+    for staff in staffs:
+        if (staff.user.nom.find(s)!=-1 or staff.user.prenom.find(s)!=-1):
+            staffs1.append(staff)
+    return staffs1
+
+
+def get_usersByIDs(ids):
+    users=[]
+    for id in ids :
+        users.append(get_user(id))
+    return users
+
+
+def get_patientsByIDs(ids):
+    patients=[]
+    for id in ids :
+        patients.append(get_patient(id))
+    return patients
+
+def get_doctorsByIDs(ids):
+    doctors = []
+    for id in ids:
+        doctors.append(get_doctor(id))
+    return doctors
+
+def get_staffsByIDs(ids):
+    staffs = []
+    for id in ids:
+        staffs.append(get_staff(id))
+    return staffs
+
+
+
+
+## get doctors patients users and staff by ids
