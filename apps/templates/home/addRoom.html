@@ -1,0 +1,69 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+<h3>
+    Add Room
+</h3>
+
+
+<form class="container-fluid" action="{% url 'addRoom' %}" method="post">
+    <div class="row form-row">
+        <div class="form-group col-md">
+            <label for="number">Number</label>
+            <input type="number" class="form-control" id="number" name="number" placeholder="0">
+        </div>
+        <div class="form-group col-md">
+            <label for="nbBeds">number of beds</label>
+            <input type="number" class="form-control" id="nbBeds" name="nbBeds" placeholder="0">
+        </div>
+    </div>
+    <div class="row form-row">
+        <div class="form-group col-md">
+            <label for="department">Department</label>
+            <select id="department" name="department" class="form-control">
+                <option selected>Choose...</option>
+                <option value="surgery">surgery</option>
+                <option value="gynaecology">gynaecology</option>
+                <option value="obstetrics">obstetrics</option>
+                <option value="paediatrics">paediatrics</option>
+                <option value="eye">eye</option>
+                <option value="orthopaedics"> orthopaedics</option>
+                <option value="neurology">neurology</option>
+                <option value="cardiology">cardiology</option>
+                <option value="psychiatry">psychiatry</option>
+                <option value="skin"> skin</option>
+                <option value="plastic surgery">plastic surgery</option>
+                <option value=" infectious disease"> infectious disease</option>
+                <option value="nuclear medicine"> nuclear medicine</option>
+                <option value="medicine">medicine</option>
+
+            </select>
+        </div>
+        <div class="form-group col-md">
+             <label for="doctor">Doctor</label>
+            <select name="doctor" id="doctor" class="form-control">
+                <option selected>Choose...</option>
+                {% for i in doctors %}
+                <option value={{i.id}}> Dr. {{ i.user.nom }} {{ i.user.prenom }}</option>
+
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+
+    </div>
+
+
+    <button type="submit" class="btn btn-danger">Add</button>
+</form>
+
+
+{% endblock content %}

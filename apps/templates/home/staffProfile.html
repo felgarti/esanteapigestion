@@ -1,0 +1,197 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Profile {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container-fluid  mt-6 ">
+
+
+    <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
+        <div class="row gx-4">
+            <div class="col-auto">
+                <div class="avatar avatar-xl position-relative">
+                    <img src="{{ ASSETS_ROOT }}/img/bruce-mars.jpg" alt="profile_image"
+                         class="w-100 border-radius-lg shadow-sm">
+                </div>
+            </div>
+            <div class="col-auto my-auto">
+                <div class="h-100">
+                    <h5 class="mb-1">
+                        {{ staff.user.prenom}} {{staff.user.nom}}
+                    </h5>
+
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="container-fluid  py-4">
+    <div class="row gx-4 ">
+        <div class="col-7 ">
+
+            <div class=" card card-body blur shadow-blur  mt-1  overflow-hidden">
+                <div class="card-header pb-0 p-3">
+                    <div class="row">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <h6 class="mb-0">Profile Information</h6>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="editStaff.html?id={{staff.id}}" class="text-secondary  font-weight-bold text-xs"
+                               data-toggle="tooltip" data-original-title="Edit user">
+                                <i class="fas fa-user-edit text-secondary text-sm" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Edit Profile"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+
+                    <hr class="horizontal gray-light my-2">
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Nom :</strong>
+                            &nbsp; {{staff.user.nom}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Prenom
+                            :</strong>
+                            &nbsp;{{staff.user.prenom}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Email
+                            :</strong>
+                            &nbsp;{{staff.user.email}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Mobile:</strong>
+                            &nbsp;
+                            {{staff.user.mobile}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Address:</strong>
+                            &nbsp;
+                            {{staff.user.address}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Date admission
+                            :</strong> &nbsp; {{staff.user.admitDate}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Status :</strong>
+                            &nbsp;
+                            {{staff.user.status}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 pb-0">
+                            <strong class="text-dark text-sm">Department :</strong> &nbsp;
+                            {{staff.department}}
+
+
+                        </li>
+
+                    </ul>
+                </div>
+
+
+            </div>
+
+
+        </div>
+        <div class="col-5">
+            <div class=" card card-body blur shadow-blur  mt-1  overflow-hidden">
+                <div class="card-header pb-0 p-3">
+                    <div class="row">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <h6 class="mb-0">Rooms</h6>
+                        </div>
+                         <div class="col-md d-flex align-items-center">
+                            <h6 class="mb-0">Total : {{nbrooms}}</h6>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-8 mt-3 d-flex  text-sm align-items-center">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Number</th>
+                            <th scope="col">Beds</th>
+
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for room in rooms %}
+                        <tr>
+                            <td>{{room.id}}</td>
+                            <td>{{room.number}}</td>
+                            <td>{{room.nbBeds}}</td>
+
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+
+            </div>
+            <div class=" card card-body blur shadow-blur  mt-1  overflow-hidden">
+                <div class="card-header pb-0 p-3">
+                    <div class="row">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <h6 class="mb-0">Patients</h6>
+                        </div>
+
+                        <div class="col-md d-flex align-items-center">
+                            <h6 class="mb-0">Total : {{nbpatients}}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8 mt-3 d-flex  text-sm align-items-center">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Prenom</th>
+                            <th scope="col">Nom</th>
+
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{patient.id}}</td>
+                            <td>{{patient.user.prenom}}</td>
+                            <td>{{patient.user.nom}}</td>
+
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    {% include "includes/footer.html" %}
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}

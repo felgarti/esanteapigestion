@@ -1,0 +1,86 @@
+
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+    <h3>
+      Add Staff
+    </h3>
+
+
+<form class="container-fluid" action="{% url 'addStaff' %}" method="post">
+  <div class="row form-row">
+    <div class="form-group col-md">
+      <label for="Nom">Nom</label>
+      <input type="text" class="form-control" id="Nom" name="nom" placeholder="Nom">
+    </div>
+    <div class="form-group col-md">
+      <label for="Prenom">Prenom</label>
+      <input type="text" class="form-control" id="Prenom" name="prenom" placeholder="Prenom">
+    </div>
+      <div class="form-group col-md">
+      <label for="email">Email</label>
+      <input type="text" class="form-control" id="email" name="email" placeholder="Prenom">
+    </div>
+  </div>
+  <div class="row form-row">
+    <div class="form-group col-md-6">
+      <label for="address">Address</label>
+      <input type="text" class="form-control" id="address" name="address" placeholder="28 rue des fleurs...">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="mobile">Mobile</label>
+      <input type="text" class="form-control" id="mobile"  name="mobile" placeholder="0622339988">
+    </div>
+  </div>
+  <div class="row form-row">
+    <div class="col-md">
+      <label for="status">Status</label>
+    <select id="status" name="status" class="form-control">
+        <option selected>Choose...</option>
+      <option value="single">single</option>
+        <option value="married">married</option>
+      <option value="widower">widower</option>
+      <option value="divorced">divorced</option>
+      </select>
+    </div>
+
+
+      <div class="form-group col-md">
+      <label for="department">Department</label>
+      <select id="department" name="department" class="form-control">
+        <option selected>Choose...</option>
+<option value="surgery">surgery </option>
+  <option value="gynaecology">gynaecology </option>
+          <option value="obstetrics">obstetrics </option>
+          <option value="paediatrics">paediatrics </option>
+          <option value="eye">eye </option>
+          <option value="orthopaedics"> orthopaedics</option>
+        <option value="neurology">neurology </option>
+        <option value="cardiology">cardiology </option>
+        <option value="psychiatry">psychiatry </option>
+        <option value="skin"> skin</option>
+        <option value="plastic surgery">plastic surgery </option>
+        <option value=" infectious disease">  infectious disease</option>
+        <option value="nuclear medicine"> nuclear medicine</option>
+        <option value="medicine">medicine </option>
+
+      </select>
+    </div>
+
+    </div>
+
+  </div>
+
+
+  <button type="submit" class="btn btn-danger">Add</button>
+</form>
+
+
+{% endblock content %}

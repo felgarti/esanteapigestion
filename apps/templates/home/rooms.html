@@ -1,0 +1,114 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Staffs {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0  ">
+                    <div class="row">
+                        <div class="col-10"><h6>Rooms</h6></div>
+
+                        <div class="col-2 text-end">
+                            <a href="/addRoom.html">
+                                <i class="fa fa-plus-circle text-dark  mt-3" aria-hidden="true"></i>
+                            </a>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs text-center font-weight-bolder opacity-7">Number
+                                </th>
+                                <th class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                    Departement
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    beds
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    ID
+                                </th>
+                                <th class="text-secondary opacity-7"></th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for i in rooms %}
+
+                            <tr>
+                                <div class="d-flex px-2 py-1 justify-content-center">
+                                    <td>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm align-center text-center "> {{i.number}}</h6>
+
+                                        </div>
+                                     </td>
+                                </div>
+
+                                <td>
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <h6 class="mb-0 text-sm"> {{i.department}}</h6>
+
+                                    </div>
+                    </div>
+                    </td>
+                    <td>
+                        <p class="text-xs font-weight-normal mb-0 text-center "> {{i.nbBeds}} </p>
+
+                    </td>
+                    <td>
+                        <p class="text-xs font-weight-bold mb-0 text-center "> {{i.id}} </p>
+
+                    </td>
+
+
+                    <td class="align-middle">
+                        <a href="editRoom.html?id={{i.id}}" class="text-secondary  font-weight-bold text-xs"
+                           data-toggle="tooltip" data-original-title="Edit user">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </a>
+
+
+                    </td>
+                    <td>
+                        <a href="delete_room?id={{i.id}}" onClick="alert('Are you sure ?')"
+                           class="text-secondary font-weight-bold text-xs" data-toggle="tooltip"
+                           data-original-title="Edit user">
+                            <i class="fa fa-trash ml-5" aria-hidden="true"></i>
+                        </a>
+                    </td>
+
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include "includes/footer.html" %}
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,173 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Profile {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container-fluid  mt-6 ">
+
+
+    <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
+        <div class="row gx-4">
+            <div class="col-auto">
+                <div class="avatar avatar-xl position-relative">
+                    <img src="{{ ASSETS_ROOT }}/img/bruce-mars.jpg" alt="profile_image"
+                         class="w-100 border-radius-lg shadow-sm">
+                </div>
+            </div>
+            <div class="col-auto my-auto">
+                <div class="h-100">
+                    <h5 class="mb-1">
+                        {{ patient.user.prenom}} {{patient.user.nom}}
+                    </h5>
+
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="container-fluid  py-4">
+    <div class="row gx-4 ">
+        <div class="col-7 ">
+
+            <div class=" card card-body blur shadow-blur  mt-1  overflow-hidden">
+                <div class="card-header pb-0 p-3">
+                    <div class="row">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <h6 class="mb-0">Profile Information</h6>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="editPatient.html?id={{patient.id}}"
+                               class="text-secondary  font-weight-bold text-xs" data-toggle="tooltip"
+                               data-original-title="Edit user">
+                                <i class="fas fa-user-edit text-secondary text-sm" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Edit Profile"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+
+                    <hr class="horizontal gray-light my-2">
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Nom :</strong>
+                            &nbsp; {{patient.user.nom}} <strong class="text-dark">Prenom :</strong>
+                            &nbsp; {{patient.user.prenom}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Email :</strong>
+                            &nbsp; {{patient.user.email}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Age :</strong>
+                            &nbsp;{{patient.age}} <strong class="text-dark">State :</strong>
+                            &nbsp;{{patient.state}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Height
+                            :</strong>
+                            &nbsp;{{patient.height}} <strong class="text-dark">Weight :</strong>
+                            &nbsp;{{patient.weight}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Mobile:</strong>
+                            &nbsp;
+                            {{patient.user.mobile}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Address:</strong>
+                            &nbsp;
+                            {{patient.user.address}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Date admission
+                            :</strong> &nbsp; {{patient.user.admitDate}}
+                        </li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Status :</strong>
+                            &nbsp;
+                            {{patient.user.status}}
+                        </li>
+
+                        <li class="list-group-item border-0 ps-0 pb-0">
+                            <strong class="text-dark text-sm">Symptoms:</strong> &nbsp;
+                            {% for symptom in patient.symptoms %}
+                            {{symptom}} ,
+                            {% endfor %}
+
+
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+
+
+        </div>
+        <div class="col-5">
+            <div class=" card card-body blur shadow-blur  mt-1  overflow-hidden">
+                <div class="card-header pb-0 p-3">
+                    <div class="row">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <h6 class="mb-0">Staff Information</h6>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-8 mt-3 d-flex align-items-center">
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 text-sm text-nowrap "><strong class="text-dark">Room number
+                            :</strong> &nbsp; {{roomnumber}}
+                        </li>
+                        <li class="list-group-item border-0 text-sm text-nowrap "><strong class="text-dark">Medecin
+                            traitant :</strong> &nbsp; {{doctor.user.nom}} {{doctor.user.prenom}}
+                        </li>
+                        </li>
+                        <li class="list-group-item border-0 text-sm text-nowrap "><strong class="text-dark">Staff :
+                        </strong> &nbsp;
+                        </li>
+
+                    </ul>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Prenom</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for staff in staffs %}
+                        <tr>
+                            <td>{{staff.id}}</td>
+                            <td>{{staff.user.nom}}</td>
+                            <td>{{staff.user.prenom}}</td>
+
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+    {% include "includes/footer.html" %}
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}
