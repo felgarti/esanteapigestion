@@ -43,7 +43,7 @@
     <div class="col-md">
       <label for="status">Status</label>
     <select id="status" name="status" class="form-control">
-        <option selected>Choose...</option>
+        <option selected value="">Choose...</option>
       <option value="single">single</option>
         <option value="married">married</option>
       <option value="widower">widower</option>
@@ -55,7 +55,7 @@
       <div class="form-group col-md">
       <label for="department">Department</label>
       <select id="department" name="department" class="form-control">
-        <option selected>Choose...</option>
+        <option selected value="">Choose...</option>
 <option value="surgery">surgery </option>
   <option value="gynaecology">gynaecology </option>
           <option value="obstetrics">obstetrics </option>
@@ -76,7 +76,7 @@
      <div class="form-group col-md">
       <label for="specialty">Specialty</label>
       <select name="specialty" id="specialty" class="form-control">
-        <option selected>Choose...</option>
+        <option selected value="">Choose...</option>
    <option value="Allergy and immunology " > Allergy and immunology </option>
  <option value="Anesthesiology" > Anesthesiology  </option>
  <option value="Dermatology" >Dermatology </option>
@@ -103,7 +103,36 @@
     </div>
 
   </div>
+    <h6>
+    Room :
+</h6>
+      <div class="form-row card card-body overflow-auto " style="height: 200px;">
 
+      <table class="table ">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Number </th>
+      <th scope="col">Beds</th>
+
+        <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for  room in rooms %}
+    <tr>
+      <th scope="row">{{room.id}}</th>
+      <td>{{room.number}}</td>
+      <td>{{room.nbBeds}} </td>
+
+        <td ><input class="form-check-input check" type="checkbox" name="{{room.id}}" value="{{room.id}}" id="{{room.id}}">
+            </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+        </div>
 
   <button type="submit" class="btn btn-danger">Add</button>
 </form>

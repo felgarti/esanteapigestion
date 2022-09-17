@@ -22,7 +22,7 @@ def index(request):
     capacite = 50
     context = {'segment': 'index', "capacite": capacite, "patients": get_patients(), "nb_staff": len(get_staffs()),
                "nb_doctors": len(get_doctors()), "nb_patients": len(get_patients()),
-               "rate": int((len(get_patients()) / capacite) * 100)}
+               "rate": int((len(get_patients()) / capacite) * 100) ,"nbrooms":len(get_rooms()) }
 
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
@@ -129,8 +129,7 @@ def doctorProfile(request):
     rooms = get_roomsByIDs(doctor.rooms)
     patients = []
     for room in rooms:
-        patients.append(get_patientsByIDs(room.patients))
-    patients = get_patientsByIDs(doctor.patients)
+        patients+=get_patientsByIDs(room.patients)
     return render(request, 'home/doctorProfile.html',
                   {"segment": "", "patients": patients, "nbrooms": len(rooms), "nbpatients": len(patients),
                    "doctor": doctor, "rooms": rooms})
@@ -144,7 +143,8 @@ def staffProfile(request):
     rooms = get_roomsByIDs(staff.rooms)
     patients = []
     for room in rooms:
-        patients.append(get_patientsByIDs(room.patients))
+        patients+=get_patientsByIDs(room.patients)
+
     return render(request, 'home/staffProfile.html',
                   {"segment": "", "patients": patients, "nbrooms": len(rooms), "nbpatients": len(patients),
                    "staff": staff, "rooms": rooms})
@@ -231,7 +231,7 @@ def addPatient(request):
         rooms = get_rooms()
         available = []
         for room in rooms:
-            if int(room.nbBeds) - len(room.patients) != 0:
+            if (room.nbBeds !="") and (int(room.nbBeds) - len(room.patients) != 0):
                 available.append(room)
         return render(request, 'home/addPatient.html', {"rooms": available})
     if (request.method == "POST"):
@@ -243,12 +243,12 @@ def addPatient(request):
         profile_pic = request.POST.get('profile_pic', '')
         status = request.POST.get('status')
         admitDate = str(date.today())
-        weight = request.POST.get('weight')
-        height = request.POST.get('height')
-        age = request.POST.get('age')
+        weight = request.POST.get('weight',0)
+        height = request.POST.get('height',0)
+        age = request.POST.get('age',0)
         print(age)
-        state = request.POST.get('state')
-        room = request.POST.get('room')
+        state = request.POST.get('state',0)
+        room = request.POST.get('room',None)
         symptoms = tolist(request.POST.get('symptoms'))
 
         print(symptoms, type(symptoms))
@@ -317,7 +317,11 @@ def addDoctor(request):
         profile_pic = request.POST.get('profile_pic', '')
         status = request.POST.get('status')
         admitDate = str(date.today())
-        rooms = [] # will change
+        rooms = []  # will change
+        for id in [i.id for i in get_rooms()]:
+            if (request.POST.get(id) != None):
+                rooms.append(request.POST.get(id))
+        print(rooms[0])
         department = request.POST.get('department')
         specialty = request.POST.get('specialty')
         doctor = create_doctor(_nom=nom, _prenom=prenom, _email=email , _mobile=mobile, _address=address, _profilepic=profile_pic,
@@ -344,6 +348,10 @@ def addStaff(request):
         status = request.POST.get('status')
         admitDate = str(date.today())
         rooms = [] # will change
+        for id in [i.id for i in get_rooms()]:
+            if(request.POST.get(id)!=None):
+                rooms.append(request.POST.get(id))
+        print(rooms[0])
         department = request.POST.get('department')
         doctor = create_staff(_nom=nom, _prenom=prenom, _email=email, _mobile=mobile, _address=address,
                                _profilepic=profile_pic,
@@ -410,21 +418,6 @@ def editDoctor(request):
                              _specialty=specialty)
         return redirect(doctors)
 
-@csrf_exempt
-def addRoom(request):
-    if (request.method == "GET"):
-        doctors = get_doctors()
-
-        return render(request, 'home/addRoom.html',{"doctors": doctors})
-    if (request.method == "POST"):
-        nbbeds = request.POST.get('nbBeds')
-        number = request.POST.get('number')
-        doctor = request.POST.get('doctor')
-        department = request.POST.get('department')
-        staff=[] # checkbox will change
-        doctor = create_room( _number=number, _doctor=doctor, _department=department, _staff=staff ,_patients=[] , _nbBeds=nbbeds)
-        return redirect(rooms)
-
 
 
 
@@ -438,6 +431,31 @@ def rooms(request):
     l = tolist(ids)
     data = get_staffsByIDs(l)
     return render(request, 'home/rooms.html', {"segment": "rooms", "rooms": data})
+
+@csrf_exempt
+def addRoom(request):
+    if (request.method == "GET"):
+        doctors = get_doctors()
+        staffs=get_staffs()
+        rooms1=[]
+        for staff in staffs:
+            rooms1.append(len(staff.rooms))
+        list_staff = zip(staffs, rooms1)
+        return render(request, 'home/addRoom.html',{"doctors": doctors , "list_staff":list_staff})
+    if (request.method == "POST"):
+        nbbeds = request.POST.get('nbBeds')
+        number = request.POST.get('number')
+        doctor = request.POST.get('doctor')
+        department = request.POST.get('department')
+        staff=[] # checkbox will change
+        for id in [i.id for i in get_staffs()] :
+            if (request.POST.get(id) != None):
+                staff.append(request.POST.get(id))
+        print(request.POST.get("0C7MxmPVcyEgbSWYXPOP"))
+        doctor = create_room( _number=number, _doctor=doctor, _department=department, _staff=staff ,_patients=[] , _nbBeds=nbbeds)
+        return redirect(rooms)
+
+
 # @csrf_exempt
 # @api_view(["Post"])
 # def ed_staff(request):

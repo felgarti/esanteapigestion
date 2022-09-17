@@ -201,6 +201,7 @@ def create_staff(_nom=None, _prenom=None, _email=None , _mobile=None, _address=N
     doc_ref.set(staff.todict())
     if staff.rooms!=[] :
         rooms=get_roomsByIDs(staff.rooms)
+        print(staff.rooms)
         for room in rooms:
             room.staff.append(staff.id)
             room1=edit_room(_id=room.id , _patients=room.patients , _department=room.department ,_staff=room.staff , _nbBeds=room.nbBeds , _doctor=room.doctor , _number=room.number)
@@ -248,13 +249,15 @@ def create_room(_doctor=None  , _patients=[] , _staff=[] , _department=None , _n
     doc_ref = db.collection(u'rooms').document()
     room=Room(_id=doc_ref.id , _doctor=_doctor , _staff=_staff , _patients=_patients,_nb_beds=_nbBeds ,_number=_number,_department=_department)
     doc_ref.set(room.todict())
-    doctor=get_doctor(_doctor)
-    doctor.rooms.append(room.id)
-    doctor=edit_doctor(_id=doctor.id , _status=doctor.user.status , _admitDate=doctor.user.admitDate, _nom=doctor.user.nom, _prenom=doctor.user.prenom ,_rooms=doctor.rooms , _email=doctor.user.email , _department=doctor.department , _specialty=doctor.specialty , _address=doctor.user.address , _profilepic=doctor.user.profile_pic , _mobile=doctor.user.mobile)
-    staffs=get_staffsByIDs(_staff)
-    for staff in staffs:
-        staff.rooms.append(room.id)
-        staff=edit_staff(_id=staff.id ,_status=staff.user.status , _admitDate=staff.user.admitDate, _nom=staff.user.nom, _prenom=staff.user.prenom ,_rooms=staff.rooms , _email=staff.user.email , _department=staff.department ,  _address=staff.user.address , _profilepic=staff.user.profile_pic , _mobile=staff.user.mobile)
+    if _doctor != None and _doctor != "":
+        doctor=get_doctor(_doctor)
+        doctor.rooms.append(room.id)
+        doctor=edit_doctor(_id=doctor.id , _status=doctor.user.status , _admitDate=doctor.user.admitDate, _nom=doctor.user.nom, _prenom=doctor.user.prenom ,_rooms=doctor.rooms , _email=doctor.user.email , _department=doctor.department , _specialty=doctor.specialty , _address=doctor.user.address , _profilepic=doctor.user.profile_pic , _mobile=doctor.user.mobile)
+    if _staff!=[] or _staff!=None :
+        staffs=get_staffsByIDs(_staff)
+        for staff in staffs:
+            staff.rooms.append(room.id)
+            staff=edit_staff(_id=staff.id ,_status=staff.user.status , _admitDate=staff.user.admitDate, _nom=staff.user.nom, _prenom=staff.user.prenom ,_rooms=staff.rooms , _email=staff.user.email , _department=staff.department ,  _address=staff.user.address , _profilepic=staff.user.profile_pic , _mobile=staff.user.mobile)
     print("\nroom created succesfully ! room id : " + room.id)
     return room
 
