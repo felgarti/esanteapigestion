@@ -3,7 +3,8 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from django.urls import path, re_path
+from django.urls import path
+
 from apps.home import views
 
 urlpatterns = [
@@ -12,21 +13,24 @@ urlpatterns = [
     path('index.html', views.index, name='home'),
     path('', views.index, name='home'),
     # Matches any html file
-   # re_path(r'^.*\.*', views.pages, name='pages'),
+    # re_path(r'^.*\.*', views.pages, name='pages'),
     path('doctors.html', views.doctors),
     path('patients.html', views.patients),
     path('staffs.html', views.staffs),
-path('rooms.html', views.rooms),
-path('patientProfile.html', views.patientProfile),
-path('doctorProfile.html', views.doctorProfile),
-path('staffProfile.html', views.staffProfile),
-path('addPatient.html', views.addPatient , name='addPatient'),
-path('addRoom.html', views.addRoom , name='addRoom'),
-path('addDoctor.html', views.addDoctor , name='addDoctor'),
-path('addStaff.html', views.addStaff , name='addStaff'),
-path('editPatient.html', views.editPatient, name="editPatient" ),
-path('editDoctor.html', views.editDoctor, name="editDoctor" ),
-path('editStaff.html', views.editStaff, name="editStaff" ),
+    path('rooms.html', views.rooms),
+    path('patientProfile.html', views.patientProfile),
+    path('doctorProfile.html', views.doctorProfile),
+    path('staffProfile.html', views.staffProfile),
+    path('addPatient.html', views.addPatient, name='addPatient'),
+    path('addRoom.html', views.addRoom, name='addRoom'),
+    path('addAlert.html', views.addAlert, name='addAlert'),
+    path('respondAlert.html', views.respondAlert, name='respondAlert'),
+    path('editRoom.html', views.editRoom, name='editRoom'),
+    path('addDoctor.html', views.addDoctor, name='addDoctor'),
+    path('addStaff.html', views.addStaff, name='addStaff'),
+    path('editPatient.html', views.editPatient, name="editPatient"),
+    path('editDoctor.html', views.editDoctor, name="editDoctor"),
+    path('editStaff.html', views.editStaff, name="editStaff"),
     # path('users/', views.users),
     # path('doctor/', views.doctor),
     # path('patient/', views.patient),
@@ -49,8 +53,11 @@ path('editStaff.html', views.editStaff, name="editStaff" ),
     # path('edit_doctor/', views.ed_doctor),
 
     # path('delete_user?id=<slug:id>', views.del_user),
-    path('delete_patient/', views.del_patient , name="delete_patient"),
-    path('delete_staff/', views.del_staff  , name="delete_staff"),
-    path('delete_doctor/', views.del_doctor , name="delete_doctor")
-
+    path('delete_patient/', views.del_patient, name="delete_patient"),
+    path('delete_staff/', views.del_staff, name="delete_staff"),
+    path('delete_doctor/', views.del_doctor, name="delete_doctor"),
+    path('delete_alert/', views.del_alert, name="delete_alert"),
+    path('delete_room/', views.del_room, name="delete_room"),
+    path('sign-in.html', views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout")
 ]

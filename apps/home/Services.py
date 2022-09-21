@@ -2,12 +2,18 @@ from . import firebaseConfig
 from . import models
 from .firebaseConfig import *
 from .models import *
+import secrets
+import string
+alphabet = string.ascii_letters + string.digits
+def generate_password():
+    p=''.join(secrets.choice(alphabet) for i in range(6))
+    return p
 
-
-def create_user(_nom=None, _email=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
+def create_user(_nom=None ,_role=None , _email=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
                 _profilepic=None):
     doc_ref = db.collection(u'users').document()
-    user = User(_id=doc_ref.id, _nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
+    password= generate_password()
+    user = User(_id=doc_ref.id,_password=password ,_role=_role , _nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
                 _admitDate=_admitDate, _profilepic=_profilepic, _email=_email)
     doc_ref.set(user.todict())
     print("\nUser created succesfully ! user id : " + doc_ref.id)
@@ -19,7 +25,15 @@ def get_user(id):
     if not doc.exists:
         print(u'No such document!')
         return
+    user = User()
+    user.fromdict(doc.to_dict())
+    return user
 
+def get_userByEmail(email):
+    doc = db.collection(u'users').where(u'email', u'==', email).get()[0]
+    if not doc.exists:
+        print(u'No such document!')
+        return
     user = User()
     user.fromdict(doc.to_dict())
     return user
@@ -37,7 +51,8 @@ def get_users():
 
 def edit_user(_id=None, _email=None, _nom=None, _prenom=None, _mobile=None, _address=None, _status=None,
               _admitDate=None, _profilepic=None):
-    user = User(_id=_id, _nom=_nom, _prenom=_prenom, _email=_email, _mobile=_mobile, _address=_address, _status=_status,
+
+    user = User(_id=_id, _nom=_nom, _prenom=_prenom,_password=get_user(_id).password ,_role=get_user(_id).role ,  _email=_email, _mobile=_mobile, _address=_address, _status=_status,
                 _admitDate=_admitDate, _profilepic=_profilepic)
     doc = db.collection(u'users').document(user.id)
     doc.set(user.todict())
@@ -45,6 +60,7 @@ def edit_user(_id=None, _email=None, _nom=None, _prenom=None, _mobile=None, _add
 
 
 def delete_user(id):
+    u = auth.get_user_by_email(get_user(id).email)
     doc = db.collection(u'users').document(id).delete()
     print("deleted successfully")
 
@@ -54,9 +70,10 @@ def delete_user(id):
 def create_doctor(_nom=None, _email=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
                   _profilepic=None, _department=None,  _specialty=None,
                   _rooms=None):
-    user = create_user(_nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
+    user = create_user(_nom=_nom,_role="doctor" ,  _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
                        _admitDate=_admitDate, _profilepic=_profilepic, _email=_email)
     doc_ref = db.collection(u'doctors').document()
+    print("rooms " ,_rooms)
     doctor = Doctor(_user=user, _id=doc_ref.id, _department=_department, _rooms=_rooms, _specialty=_specialty)
     doc_ref.set(doctor.todict())
     if doctor.rooms!=[]:
@@ -70,8 +87,10 @@ def create_doctor(_nom=None, _email=None, _prenom=None, _mobile=None, _address=N
 
 def get_doctor(id):
     doc = db.collection('doctors').document(id).get()
+    print(" this is the get doc id "  , id)
     if not doc.exists:
         print(u'No such document!')
+        print(" this is the get doc id 2 "  , id)
         return
     doctor = Doctor()
     doctor.fromdict(doc.to_dict())
@@ -117,9 +136,14 @@ def edit_doctor(_id=None, _nom=None, _prenom=None, _email=None, _mobile=None, _a
 
 def delete_doctor(id):
     doctor = get_doctor(id)
-    print(doctor.todict())
+    for i in doctor.rooms:
+        room=get_room(i)
+        room.doctor=""
+        edit_room(_id=room.id, _patients=room.patients, _department=room.department, _staff=room.staff,
+                  _nbBeds=room.nbBeds, _doctor=room.doctor, _number=room.number)
     userid = doctor.user.id
     delete_user(userid)
+    print(id)
     doc = db.collection(u'doctors').document(id).delete()
     print("deleted successfully")
 
@@ -128,7 +152,7 @@ def delete_doctor(id):
 
 def create_patient(_nom=None, _email=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
                    _profilepic=None, _room=None, _symptoms=[], _weight=None , _height=None ,  _state=None , _age=None   ):
-    user = create_user(_nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
+    user = create_user(_nom=_nom, _role="patient" , _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
                        _admitDate=_admitDate, _profilepic=_profilepic, _email=_email)
     doc_ref = db.collection(u'patients').document()
     patient = Patient(_id=doc_ref.id,_user=user , _symptoms=_symptoms , _room=_room , _height=_height ,_age=_age , _weight=_weight , _state=_state)
@@ -138,6 +162,18 @@ def create_patient(_nom=None, _email=None, _prenom=None, _mobile=None, _address=
     room1=edit_room(_id=room.id , _patients=room.patients , _department=room.department ,_staff=room.staff , _nbBeds=room.nbBeds , _doctor=room.doctor , _number=room.number)
     print("\nPatient created successfully ! patient id : " + patient.id)
     return patient
+
+def create_alert(_doctor=None ,_priority=None ,  _user=None , _createdTime=None , _responseTime=None , _content=None , _response=None   ):
+    doc_ref= db.collection('alerts').document()
+    alert = Alert(_id=doc_ref.id ,_priority=_priority ,  _doctor=_doctor , _user=_user , _createdTime=_createdTime , _responseTime=_responseTime , _content=_content , _response=_response )
+    doc_ref.set(alert.todict())
+    return alert
+
+def edit_alert(_id=None ,_priority=None ,  _doctor=None , _user=None , _createdTime=None , _responseTime=None , _content=None , _response=None   ):
+    doc_ref= db.collection('alerts').document(_id)
+    alert = Alert(_id=doc_ref.id , _priority=_priority , _doctor=_doctor , _user=_user , _createdTime=_createdTime , _responseTime=_responseTime , _content=_content , _response=_response )
+    doc_ref.set(alert.todict())
+    return alert
 
 
 def edit_patient(_id=None, _nom=None, _email=None , _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
@@ -149,15 +185,22 @@ def edit_patient(_id=None, _nom=None, _email=None , _prenom=None, _mobile=None, 
     patient = Patient(_user=user, _id=_id,  _symptoms=_symptoms , _room=_room , _height=_height , _age=_age,_weight=_weight , _state=_state)
     doc = db.collection('patients').document(patient.id)
     doc.set(patient.todict())
-    if(patient1.room!=patient.room):
+    if(patient1.room.strip()!=patient.room.strip()):
         oldroom=get_room(patient1.room)
-        oldroom.patients.remove(patient1.id)
-        oldroom=edit_room(_id=oldroom.id , _patients=oldroom.patients , _department=oldroom.department ,_staff=oldroom.staff , _nbBeds=oldroom.nbBeds , _doctor=oldroom.doctor , _number=oldroom.number)
-        newroom = get_room(patient1.room)
-        newroom.patients.append(patient.id)
-        newroom = edit_room(_id=newroom.id, _patients=newroom.patients, _department=newroom.department,
-                            _staff=newroom.staff, _nbBeds=newroom.nbBeds, _doctor=newroom.doctor,
-                            _number=newroom.number)
+        if oldroom!=None :
+            print("old room   : ", oldroom.number)
+            print(oldroom.patients)
+            oldroom.patients.remove(patient.id)
+            print(oldroom.patients)
+            oldroom=edit_room(_id=oldroom.id , _patients=oldroom.patients , _department=oldroom.department ,_staff=oldroom.staff , _nbBeds=oldroom.nbBeds , _doctor=oldroom.doctor , _number=oldroom.number)
+        newroom = get_room(patient.room)
+        if newroom !=None :
+            print("new room   : ", newroom.number)
+
+            newroom.patients.append(patient.id)
+            newroom = edit_room(_id=newroom.id, _patients=newroom.patients, _department=newroom.department,
+                                _staff=newroom.staff, _nbBeds=newroom.nbBeds, _doctor=newroom.doctor,
+                                _number=newroom.number)
     return patient
 
 
@@ -188,20 +231,26 @@ def delete_patient(id):
     db.collection(u'patients').document(id).delete()
     print("deleted successfully")
 
+def delete_alert(id):
+    alert = get_alert(id)
+    db.collection(u'alerts').document(id).delete()
+    print("deleted successfully")
+
 
 ##############################################################################
 
 
-def create_staff(_nom=None, _prenom=None, _email=None , _mobile=None, _address=None, _status=None, _admitDate=None, _profilepic=None,
+
+
+def create_staff(_nom=None,_password=None ,_role=None ,  _prenom=None, _email=None , _mobile=None, _address=None, _status=None, _admitDate=None, _profilepic=None,
                  _department=None, _rooms=[]):
-    user = create_user(_nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
+    user = create_user(_role="staff" , _nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
                        _admitDate=_admitDate, _profilepic=_profilepic, _email=_email)
     doc_ref = db.collection(u'staff').document()
     staff = Staff(_user=user, _id=doc_ref.id,_department= _department, _rooms=_rooms)
     doc_ref.set(staff.todict())
     if staff.rooms!=[] :
         rooms=get_roomsByIDs(staff.rooms)
-        print(staff.rooms)
         for room in rooms:
             room.staff.append(staff.id)
             room1=edit_room(_id=room.id , _patients=room.patients , _department=room.department ,_staff=room.staff , _nbBeds=room.nbBeds , _doctor=room.doctor , _number=room.number)
@@ -209,7 +258,7 @@ def create_staff(_nom=None, _prenom=None, _email=None , _mobile=None, _address=N
     return staff
 
 
-def edit_staff(_id=None, _nom=None, _prenom=None, _email=None,_mobile=None, _address=None, _status=None, _admitDate=None,
+def edit_staff(_id=None,  _nom=None, _prenom=None, _email=None,_mobile=None, _address=None, _status=None, _admitDate=None,
                _profilepic=None,  _department=None, _rooms=[]):
     staff1 = get_staff(_id)
     userid = staff1.user.id
@@ -228,7 +277,10 @@ def edit_staff(_id=None, _nom=None, _prenom=None, _email=None,_mobile=None, _add
                                 _number=room.number)
         for oldroom in list(set(staff1.rooms) - set(staff.rooms)):
             room=get_room(oldroom)
-            room.staff.remove(staff.id)
+            print("    staffid :", staff.id, "    roomid :", room.id)
+            if staff.id in  room.staff :
+                room.staff.remove(staff.id)
+
             room = edit_room(_id=room.id, _patients=room.patients, _department=room.department,
                                 _staff=room.staff, _nbBeds=room.nbBeds, _doctor=room.doctor,
                                 _number=room.number)
@@ -266,6 +318,12 @@ def create_room(_doctor=None  , _patients=[] , _staff=[] , _department=None , _n
 def edit_room(_id=None ,_doctor=None  , _patients=[] , _staff=[] , _department=None , _nbBeds=None , _number=None ):
     room=get_room(_id)
     room =Room(_id=_id , _doctor=_doctor , _staff=_staff , _patients=_patients,_nb_beds=_nbBeds ,_number=_number,_department=_department)
+    if (_doctor!=None and _doctor!="") and (room.doctor=="" and room.doctor==None) :
+        doctor=get_doctor(_doctor)
+        doctor.rooms.append(_id)
+        doctor=edit_doctor(_id=doctor.id, _nom=doctor.user.nom, _prenom=doctor.user.prenom, _email=doctor.user.email, _mobile=doctor.user.mobile, _address=doctor.user.address, _status=doctor.user.status,
+                _admitDate=doctor.user.admitDate, _profilepic=doctor.user.profile_pic, _department=doctor.department, _rooms=doctor.rooms, _specialty=doctor.specialty)
+
     doc = db.collection('rooms').document(room.id)
     doc.set(room.todict())
     return room
@@ -299,12 +357,62 @@ def get_staffs():
         staffs.append(staff)
     return staffs
 
+def get_alerts():
+    docs = db.collection(u'alerts').stream()
+    alerts = []
+    for doc in docs:
+        alert = Alert()
+        alert.fromdict(doc.to_dict())
+        alerts.append(alert)
+    return alerts
 
-def delete_staff(id):
-    staff = get_staff(id)
+def get_alert(id):
+    doc = db.collection('alerts').document(id).get()
+    if not doc.exists:
+        print(u'No such document!')
+        return
+    alert = Alert()
+    alert.fromdict(doc.to_dict())
+    return alert
+
+def delete_staff(_id):
+    staff = get_staff(_id)
+    for id in staff.rooms:
+        room=get_room(id)
+        if room != None and staff.id in room.staff :
+            room.staff.remove(staff.id)
+            room=edit_room(_id=room.id , _patients=room.patients , _department=room.department ,_staff=room.staff , _nbBeds=room.nbBeds , _doctor=room.doctor , _number=room.number)
     userid = staff.user.id
     delete_user(userid)
-    doc = db.collection(u'staff').document(id).delete()
+    doc = db.collection(u'staff').document(_id).delete()
+    print("deleted successfully")
+
+def delete_room(id):
+    room = get_room(id)
+    doctors=get_doctors()
+    patients=get_patients()
+    staffs=get_staffs()
+    for doctor in doctors:
+        doctor.rooms=list(filter(lambda a: a !=id , doctor.rooms))
+        doctor=edit_doctor(_id=doctor.id, _nom=doctor.user.nom, _prenom=doctor.user.prenom, _email=doctor.user.email, _mobile=doctor.user.mobile, _address=doctor.user.address, _status=doctor.user.status,
+                _admitDate=doctor.user.admitDate, _profilepic=doctor.user.profile_pic, _department=doctor.department, _rooms=doctor.rooms, _specialty=doctor.specialty)
+        for staff in staffs:
+            staff.rooms = list(filter(lambda a: a != id, staff.rooms))
+            staff = edit_staff(_id=staff.id, _nom=staff.user.nom, _prenom=staff.user.prenom,
+                                 _email=staff.user.email, _mobile=staff.user.mobile, _address=staff.user.address,
+                                 _status=staff.user.status,
+                                 _admitDate=staff.user.admitDate, _profilepic=staff.user.profile_pic,
+                                 _department=staff.department, _rooms=staff.rooms)
+        for patient in patients:
+            if patient.room==id:
+                patient.room==None
+                patient = edit_patient(_id=patient.id, _nom=patient.user.nom, _prenom=patient.user.prenom,
+                                   _email=patient.user.email, _mobile=patient.user.mobile, _address=patient.user.address,
+                                   _status=patient.user.status,
+                                   _admitDate=patient.user.admitDate, _profilepic=patient.user.profile_pic,
+                                   _symptoms=patient.symptoms, _room=patient.room ,_weight=patient.weight , _height=patient.height ,_state=patient.state , _age=patient.age)
+
+    doc = db.collection(u'rooms').document(id).delete()
     print("deleted successfully")
 
 
@@ -387,5 +495,11 @@ def get_staffsByIDs(ids):
     for id in ids:
         staffs.append(get_staff(id))
     return staffs
+
+def get_alertsByIDs(ids):
+    alerts = []
+    for id in ids:
+        alerts.append(get_staff(id))
+    return alerts
 
 ## get doctors patients users and staff by ids

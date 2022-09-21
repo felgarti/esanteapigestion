@@ -4,10 +4,12 @@ from django.db import models
 
 
 class User:
-    def __init__(self, _email=None , _id=None, _nom=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
+    def __init__(self,_password=None ,_role=None ,   _email=None , _id=None, _nom=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
                  _profilepic=None):
         self.id = _id
         self.email=_email
+        self.password=_password
+        self.role = _role
         self.nom = _nom
         self.prenom = _prenom
         self.mobile = _mobile
@@ -19,6 +21,8 @@ class User:
     def todict(self):
         d = {"mobile": self.mobile,
              "id": self.id,
+             "role": self.role,
+             "password": self.password,
              "nom": self.nom,
              "email": self.email,
              "prenom": self.prenom,
@@ -32,6 +36,8 @@ class User:
     def fromdict(self, d):
         self.id = d["id"]
         self.nom = d["nom"]
+        self.password = d["password"]
+        self.role = d["role"]
         self.email = d["email"]
         self.prenom = d["prenom"]
         self.mobile = d["mobile"]
@@ -174,3 +180,38 @@ class Room:
 
     def __str__(self):
         return str(self.id)+"  room number " +str(self.number)
+
+
+class Alert:
+    def __init__(self , _id=None ,_priority=None ,  _doctor=None , _user=None , _createdTime=None , _responseTime=None , _content=None , _response=None ):
+        self.doctor =_doctor
+        self.id=_id
+        self.user=_user
+        self.createdTime=_createdTime
+        self.responseTime=_responseTime
+        self.content=_content
+        self.response=_response
+        self.priority =_priority
+
+    def fromdict(self,d):
+        self.doctor = d['doctor']
+        self.user = d['user']
+        self.id = d['id']
+        self.createdTime = d['createdTime']
+        self.responseTime = d['responseTime']
+        self.content = d['content']
+        self.response = d['response']
+        self.priority = d['priority']
+    def todict(self):
+        d = {"responseTime": self.responseTime,
+             "createdTime": self.createdTime,
+             "user": self.user,
+             "id": self.id,
+             "priority": self.priority,
+             "doctor": self.doctor,
+             "content": self.content,
+             "response": self.response
+             }
+        return d
+
+

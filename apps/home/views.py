@@ -2,8 +2,9 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-from datetime import date
 
+from datetime import date
+from datetime import datetime
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,13 +17,42 @@ from rest_framework.decorators import api_view
 
 from .Services import *
 
+currentuser=None
 
+@csrf_exempt
+def login_view(request):
+    global currentuser
+    if (request.method == "GET"):
+        return render(request, 'home/sign-in.html')
+    if (request.method == "POST"):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = get_userByEmail(email)
+        if user!=None and user.password==password :
+            currentuser=get_userByEmail(email)
+            print(email , currentuser.email)
+            return redirect(index)
+        else:
+            return render(request, 'home/sign-in.html')
+
+
+
+
+@csrf_exempt
+def logout_view(request):
+    global currentuser
+    currentuser=None
+    return redirect(login_view)
+
+
+@csrf_exempt
 @login_required(login_url="/login/")
 def index(request):
+    role=currentuser.role
     capacite = 50
-    context = {'segment': 'index', "capacite": capacite, "patients": get_patients(), "nb_staff": len(get_staffs()),
+    context = {'role':role , 'segment': 'index', "capacite": capacite, "patients": get_patients(), "nb_staff": len(get_staffs()),
                "nb_doctors": len(get_doctors()), "nb_patients": len(get_patients()),
-               "rate": int((len(get_patients()) / capacite) * 100) ,"nbrooms":len(get_rooms()) }
+               "rate": int((len(get_patients()) / capacite) * 100) ,"nbrooms":len(get_rooms()) , "alerts" : get_alerts() }
 
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
@@ -62,12 +92,16 @@ def tolist(s):
 @csrf_exempt
 @api_view(["GET"])
 def doctors(request):
+    global currentuser
     ids = request.GET.get('ids')
     if ids == None or ids == "":
         doctors = get_doctors()
+        print(currentuser.email)
         return render(request, 'home/doctors.html', {"segment": "doctors", "doctors": doctors})
     l = tolist(ids)
+
     # data = [i.todict() for i in get_doctorsByIDs(l)]
+
     doctors = get_doctorsByIDs(l)
     return render(request, 'home/doctors.html', {"segment": "doctors", "doctors": doctors})
 
@@ -113,10 +147,21 @@ def users(request):
 def patientProfile(request):
     id = request.GET.get('id')
     patient = get_patient(id)
-    room = get_room(patient.room)
-    roomnumber = room.number
-    doctor = get_doctor(room.doctor)
-    staffs = get_staffsByIDs(room.staff)
+    room=None
+    doctor=None
+    if patient.room!=None and patient.room!="":
+        print("room : " , patient.room)
+        room = get_room(patient.room)
+        staffs=[]
+        if room !=None :
+            roomnumber = room.number
+            staffs = get_staffsByIDs(room.staff)
+            if room.doctor != None and room.doctor != "":
+                doctor = get_doctor(room.doctor)
+        else:
+            roomnumber = ""
+
+
     return render(request, 'home/patientProfile.html',
                   {"segment": "", "patient": patient, "doctor": doctor, "staffs": staffs, "roomnumber": roomnumber})
 
@@ -210,19 +255,56 @@ def staffProfile(request):
 #         return JsonResponse({"erreur": " no id in url"})
 
 
+# @csrf_exempt
+# @api_view(["Post"])
+# def add_user(request):
+#     nom = request.GET.get('nom')
+#     prenom = request.GET.get('prenom')
+#     mobile = request.GET.get('mobile')
+#     address = request.GET.get('address')
+#     profile_pic = request.GET.get('profile_pic')
+#     status = request.GET.get('status')
+#     admitDate = request.GET.get('admitDate')
+#     user = create_user(_nom=nom, _prenom=prenom, _mobile=mobile, _address=address, _profilepic=profile_pic,
+#                        _status=status, _admitDate=admitDate)
+#     return JsonResponse(user.todict(), safe=False)
+
+
 @csrf_exempt
-@api_view(["Post"])
-def add_user(request):
-    nom = request.GET.get('nom')
-    prenom = request.GET.get('prenom')
-    mobile = request.GET.get('mobile')
-    address = request.GET.get('address')
-    profile_pic = request.GET.get('profile_pic')
-    status = request.GET.get('status')
-    admitDate = request.GET.get('admitDate')
-    user = create_user(_nom=nom, _prenom=prenom, _mobile=mobile, _address=address, _profilepic=profile_pic,
-                       _status=status, _admitDate=admitDate)
-    return JsonResponse(user.todict(), safe=False)
+def addAlert(request):
+    if (request.method == "GET"):
+
+        return render(request, 'home/addAlert.html')
+    if (request.method == "POST"):
+        content = request.POST.get('content')
+        priority=request.POST.get('priority')
+        user=currentuser.id # to replace
+        createdTime=str(datetime.now().strftime("%H:%M:%S"))
+        alert = create_alert(_doctor=None , _createdTime=createdTime , _responseTime=None , _response=None , _user=user , _content=content ,_priority=priority)
+        return redirect(index)
+
+@csrf_exempt
+def respondAlert(request):
+    if (request.method == "GET"):
+        _id = request.GET.get('id')
+        print(_id , "this is id of the alert ")
+        return render(request, 'home/respondAlert.html', {"alert" : get_alert(_id)})
+    if (request.method == "POST"):
+        _id = request.POST.get('id')
+        print(_id, "this is id of the alert 2")
+        alert= get_alert(_id)
+        response = request.POST.get('response')
+        responseTime=str(datetime.now().strftime("%H:%M:%S"))
+        content = alert.content
+        priority= alert.priority
+        user=alert.user
+        # to replace
+        doctor=currentuser.id
+        createdTime=alert.createdTime
+        alert = edit_alert(_id=_id, _doctor=doctor , _createdTime=createdTime , _responseTime=responseTime , _response=response , _user=user , _content=content ,_priority=priority)
+        return redirect(index)
+
+
 
 
 @csrf_exempt
@@ -271,8 +353,13 @@ def editPatient(request):
                 available.append(room)
         if patient.room not in [i.id for i in available]:
             available.append(get_room(patient.room))
+        roomnumber=get_room(patient.room)
+        if roomnumber!=None :
+            roomnumber=roomnumber.number
+        else:
+            roomnumber=""
         return render(request, 'home/editPatient.html',
-                      {"patient": patient, "rooms": available, "currentroom": get_room(patient.room).number})
+                      {"patient": patient, "rooms": available, "currentroom": roomnumber})
     if (request.method == "POST"):
         id = request.POST.get('id')
         patient = get_patient(id)
@@ -321,7 +408,6 @@ def addDoctor(request):
         for id in [i.id for i in get_rooms()]:
             if (request.POST.get(id) != None):
                 rooms.append(request.POST.get(id))
-        print(rooms[0])
         department = request.POST.get('department')
         specialty = request.POST.get('specialty')
         doctor = create_doctor(_nom=nom, _prenom=prenom, _email=email , _mobile=mobile, _address=address, _profilepic=profile_pic,
@@ -362,12 +448,15 @@ def addStaff(request):
 def editStaff(request):
     if (request.method == "GET"):
         id = request.GET.get('id')
-        rooms = get_rooms()
-        available = []
-        for room in rooms:
-            available.append({"number": room.number, "nbstaff": len(room.staff), "id": room.id})
         staff = get_staff(id)
-        return render(request, 'home/editStaff.html', {"staff": staff , "rooms":available})
+        checked = get_roomsByIDs(staff.rooms)
+
+        rooms=[]
+        for i in [i.id for i in get_rooms()]:
+            if i not in staff.rooms:
+                rooms.append(get_room(i))
+
+        return render(request, 'home/editStaff.html', {"staff": staff , "rooms":rooms , "checked_rooms":checked})
     if (request.method == "POST"):
         id = request.POST.get('id')
         staff = get_staff(id)
@@ -379,7 +468,10 @@ def editStaff(request):
         profile_pic = request.POST.get('profile_pic', '')
         status = request.POST.get('status')
         admitDate = staff.user.admitDate
-        rooms=staff.rooms # will change
+        rooms = []  # checkbox will change
+        for id in [i.id for i in get_rooms()]:
+            if (request.POST.get(id) != None):
+                rooms.append(request.POST.get(id))
         department = request.POST.get('department')
         staff = edit_staff(_id=id, _nom=nom, _prenom=prenom, _mobile=mobile, _address=address, _profilepic=profile_pic,
                            _status=status, _admitDate=admitDate, _department=department , _rooms=rooms , _email=email)
@@ -391,16 +483,16 @@ def editDoctor(request):
     if (request.method == "GET"):
         id = request.GET.get('id')
         doctor = get_doctor(id)
-        rooms = get_rooms()
-        available = []
-        for room in rooms:
-            if room.doctor== None or room.doctor=="":
-                available.append(room)
-        available.append(get_roomsByIDs(doctor.rooms))
-        return render(request, 'home/editDoctor.html', {"doctor": doctor ,"rooms" : available})
+        checked = get_roomsByIDs(doctor.rooms)
+        rooms = []
+        for i in [i.id for i in get_rooms()]:
+            if i not in doctor.rooms:
+                rooms.append(get_room(i))
+        return render(request, 'home/editDoctor.html', {"doctor": doctor,"rooms":rooms , "checked_rooms":checked})
     if (request.method == "POST"):
-        id = request.POST.get('id')
-        doctor = get_doctor(id)
+        _id = request.POST.get('id')
+        print("yyyyyyyyyyyyyyo" , _id)
+        doctor = get_doctor(_id)
         email = request.POST.get('email')
         nom = request.POST.get('nom')
         prenom = request.POST.get('prenom')
@@ -409,12 +501,15 @@ def editDoctor(request):
         profile_pic = request.POST.get('profile_pic', '')
         status = request.POST.get('status')
         admitDate = doctor.user.admitDate
-        rooms = doctor.rooms # will change
+        rooms = []  # checkbox will change
+        for id in [i.id for i in get_rooms()]:
+            if (request.POST.get(id) != None):
+                rooms.append(request.POST.get(id))
         department = request.POST.get('department')
         specialty = request.POST.get('specialty')
-        doctor = edit_doctor(_id=id, _nom=nom, _prenom=prenom, _mobile=mobile, _address=address,
+        doctor = edit_doctor(_id=_id, _nom=nom, _prenom=prenom, _mobile=mobile, _address=address,
                              _profilepic=profile_pic,
-                             _status=status, _admitDate=admitDate, _department=department,_rooms=rooms,_email=email,
+                             _status=status, _admitDate=admitDate, _department=department, _rooms=rooms, _email=email,
                              _specialty=specialty)
         return redirect(doctors)
 
@@ -452,7 +547,48 @@ def addRoom(request):
             if (request.POST.get(id) != None):
                 staff.append(request.POST.get(id))
         print(request.POST.get("0C7MxmPVcyEgbSWYXPOP"))
-        doctor = create_room( _number=number, _doctor=doctor, _department=department, _staff=staff ,_patients=[] , _nbBeds=nbbeds)
+        room = create_room( _number=number, _doctor=doctor, _department=department, _staff=staff ,_patients=[] , _nbBeds=nbbeds)
+        return redirect(rooms)
+
+
+
+@csrf_exempt
+def editRoom(request):
+    if (request.method == "GET"):
+        id = request.GET.get('id')
+        room=get_room(id)
+        checked=get_staffsByIDs(room.staff)
+        doctors = get_doctors()
+        staffs=[]
+        for i in [i.id for i in  get_staffs()]:
+            if i not in room.staff:
+                staffs.append(get_staff(i))
+        rooms1=[]
+        rooms2=[]
+        for staff in staffs:
+            rooms1.append(len(staff.rooms))
+        for st in checked:
+            rooms2.append(len(st.rooms))
+        list_staff = zip(staffs, rooms1)
+        list_checked = zip(checked, rooms2)
+        doctor=None
+        if room.doctor!=None and room.doctor!="" :
+            doctor=get_doctor(room.doctor)
+        return render(request, 'home/editRoom.html',{"room": room ,"currentdoctor":doctor ,  "doctors": doctors ,"list_checked":list_checked ,  "list_staff":list_staff})
+    if (request.method == "POST"):
+        id = request.POST.get('id')
+        room=get_room(id)
+        print("id   " ,id)
+        nbbeds = request.POST.get('nbBeds')
+        number = request.POST.get('number')
+        doctor = request.POST.get('doctor')
+        department = request.POST.get('department')
+        staff=[] # checkbox will change
+        for id in [i.id for i in get_staffs()] :
+            if (request.POST.get(id) != None):
+                staff.append(request.POST.get(id))
+
+        room = edit_room(_id=id ,  _number=number, _doctor=doctor, _department=department, _staff=staff ,_patients=room.patients , _nbBeds=nbbeds)
         return redirect(rooms)
 
 
@@ -541,10 +677,22 @@ def del_user(request):
 
 
 @csrf_exempt
+def del_alert(request):
+    id = request.GET.get('id')
+    delete_alert(id)
+    return redirect(index)
+
+@csrf_exempt
 def del_patient(request):
     id = request.GET.get('id')
     delete_patient(id)
     return redirect(patients)
+
+@csrf_exempt
+def del_room(request):
+    id = request.GET.get('id')
+    delete_room(id)
+    return redirect(rooms)
 
 
 # , {"segment":"patients" ,"patients":get_patients()}
@@ -553,6 +701,7 @@ def del_patient(request):
 @csrf_exempt
 def del_doctor(request):
     id = request.GET.get('id')
+    print("yyoooooooooooooooo" ,id)
     delete_doctor(id)
     return redirect(doctors)
 

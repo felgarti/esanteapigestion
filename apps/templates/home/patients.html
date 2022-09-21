@@ -70,7 +70,13 @@
                       <span class="text-secondary text-xs font-weight-bold">{{i.user.mobile}}</span>
                     </td>
    <td class="align-middle text-center text-sm">
-                        <span class=" bg-success badge badge-sm bg-gradient-secondary">Stable</span>
+       {% if i.state == "critique" %}
+    <span class=" bg-danger badge badge-sm bg-gradient-secondary">{{i.state}}</span>
+{% else %}
+    <span class=" bg-success badge badge-sm bg-gradient-secondary">{{i.state}}</span>
+
+{% endif %}
+
                       </td>
                     <td class="align-middle">
                       <a href="editPatient.html?id={{i.id}}" class="text-secondary  font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">

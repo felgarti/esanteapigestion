@@ -1,0 +1,117 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+<h3>
+    Edit Room
+</h3>
+
+
+<form class="container-fluid" action="{% url 'editRoom' %}" method="post">
+    <input type="hidden" class="form-control"  name="id" id="id" value={{room.id}}>
+    <div class="row form-row">
+        <div class="form-group col-md">
+            <label for="number">Number</label>
+            <input type="number" class="form-control" id="number" name="number" value="{{room.number}}">
+        </div>
+        <div class="form-group col-md">
+            <label for="nbBeds">number of beds</label>
+            <input type="number" class="form-control" id="nbBeds" name="nbBeds" value="{{room.nbBeds}}">
+        </div>
+    </div>
+    <div class="row form-row">
+        <div class="form-group col-md">
+            <label for="department">Department</label>
+            <select id="department" name="department" class="form-control">
+                <option selected value="{{room.department}}">{{room.department}}</option>
+                <option value="surgery">surgery</option>
+                <option value="gynaecology">gynaecology</option>
+                <option value="obstetrics">obstetrics</option>
+                <option value="paediatrics">paediatrics</option>
+                <option value="eye">eye</option>
+                <option value="orthopaedics"> orthopaedics</option>
+                <option value="neurology">neurology</option>
+                <option value="cardiology">cardiology</option>
+                <option value="psychiatry">psychiatry</option>
+                <option value="skin"> skin</option>
+                <option value="plastic surgery">plastic surgery</option>
+                <option value=" infectious disease"> infectious disease</option>
+                <option value="nuclear medicine"> nuclear medicine</option>
+                <option value="medicine">medicine</option>
+
+            </select>
+        </div>
+        <div class="form-group col-md">
+            <label for="doctor">Doctor</label>
+            <select name="doctor" id="doctor" class="form-control">
+                <option selected value="{{currentdoctor.id}}">Dr. {{currentdoctor.user.nom }} {{currentdoctor.user.prenom }}</option>
+                {% for i in doctors %}
+                <option value={{i.id}}> Dr. {{ i.user.nom }} {{ i.user.prenom }}</option>
+
+                {% endfor %}
+            </select>
+        </div>
+
+
+    </div>
+
+
+    </div>
+<h6>
+    Staff :
+</h6>
+  <div class="row form-row overflow-auto card card-body" style="height: 200px;"  >
+
+
+      <table class="table ">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Prenom </th>
+      <th scope="col">Nom</th>
+      <th class="align-middle text-center" scope="col">Nombre de chambres</th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for staff , room in list_checked %}
+    <tr>
+      <th scope="row">{{staff.id}}</th>
+      <td>{{staff.user.prenom}}</td>
+      <td>{{staff.user.nom}}</td>
+      <td class="align-middle text-center">{{room}}</td>
+        <td >
+
+            <input class="form-check-input check" type="checkbox" name="{{staff.id}}" value={{staff.id}}  checked >
+            </td>
+    </tr>
+    {% endfor %}
+  {% for staff , room in list_staff %}
+    <tr>
+      <th scope="row">{{staff.id}}</th>
+      <td>{{staff.user.prenom}}</td>
+      <td>{{staff.user.nom}}</td>
+      <td class="align-middle text-center">{{room}}</td>
+        <td >
+
+            <input class="form-check-input check" type="checkbox" name="{{staff.id}}" value={{staff.id}} id="{{staff.id}}">
+            </td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+        </div>
+<br>
+    <button type="submit" class="btn btn-danger">Edit</button>
+</form>
+
+
+{% endblock content %}

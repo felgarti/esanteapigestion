@@ -1,0 +1,34 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+<h3>
+  Respond to Alert
+</h3>
+
+
+<form class="container-fluid" action="{% url 'respondAlert' %}" method="post">
+<input type="hidden" value="{{alert.id}}" name="id" id="id" >
+    <div class="form-group col-md">
+        <h6>Content</h6>
+        <div class="card card-body text-sm " >
+            {{alert.content}}
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <label for="response">Response</label>
+        <textarea name="response" class="form-control" id="response" rows="5">{{alert.response}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-danger">respond</button>
+</form>
+
+
+{% endblock content %}
