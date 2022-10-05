@@ -1,14 +1,10 @@
-from django.db import models
-
-
-
-
 class User:
-    def __init__(self,_password=None ,_role=None ,   _email=None , _id=None, _nom=None, _prenom=None, _mobile=None, _address=None, _status=None, _admitDate=None,
+    def __init__(self, _password=None, _role=None, _email=None, _id=None, _nom=None, _prenom=None, _mobile=None,
+                 _address=None, _status=None, _admitDate=None,
                  _profilepic=None):
         self.id = _id
-        self.email=_email
-        self.password=_password
+        self.email = _email
+        self.password = _password
         self.role = _role
         self.nom = _nom
         self.prenom = _prenom
@@ -53,11 +49,11 @@ class Patient:
                  _symptoms: object = None,
                  _room: object = None) -> object:
         self.user = _user
-        self.age =_age
+        self.age = _age
         self.id = _id
         self.weight = _weight
-        self.height=_height
-        self.state=_state
+        self.height = _height
+        self.state = _state
         self.symptoms = _symptoms
         self.room = _room
 
@@ -67,9 +63,9 @@ class Patient:
              "room": self.room,
              "symptoms": self.symptoms,
              "state": self.state,
-             "age":self.age ,
-             "weight":self.weight,
-             "height":self.height ,
+             "age": self.age,
+             "weight": self.weight,
+             "height": self.height,
 
              }
         return d
@@ -83,13 +79,12 @@ class Patient:
         user.fromdict(d["user"])
         self.user = user
         self.id = d["id"]
-        self.age=d["age"]
+        self.age = d["age"]
         self.room = d["room"]
         self.symptoms = d["symptoms"]
         self.state = d["state"]
         self.height = d["height"]
-        self.weight= d["weight"]
-
+        self.weight = d["weight"]
 
     def __str__(self):
         return self.user.nom + " (" + self.symptoms + ")"
@@ -99,7 +94,7 @@ class Patient:
 class Staff:
     def __init__(self, _user=None, _id=None,
                  _department=None,
-                 _rooms=None ):
+                 _rooms=None):
         self.user = _user
         self.id = _id
         self.department = _department
@@ -109,26 +104,26 @@ class Staff:
         d = {"user": self.user.todict(),
              "id": self.id,
              "department": self.department,
-             "rooms":self.rooms
+             "rooms": self.rooms
 
              }
         return d
 
     def fromdict(self, d):
-        user=User()
+        user = User()
         user.fromdict(d["user"])
         self.user = user
         self.id = d["id"]
         self.department = d["department"]
-        self.rooms=d["rooms"]
+        self.rooms = d["rooms"]
 
     def __str__(self):
         return self.user.nom + " (" + self.department + ")"
 
 
 class Doctor(Staff):
-    def __init__(self, _user=None, _id=None, _department=None,  _specialty=None , _rooms=None):
-        super().__init__(_user, _id,  _department, _rooms)
+    def __init__(self, _user=None, _id=None, _department=None, _specialty=None, _rooms=None):
+        super().__init__(_user, _id, _department, _rooms)
         self.specialty = _specialty
 
     def todict(self):
@@ -145,26 +140,25 @@ class Doctor(Staff):
 
 
 class Room:
-    def __init__(self, _doctor=None ,
-                 _staff=None,_id=None,
-                 _patients=None , _nb_beds=None , _number=None ,_department=None ):
-        self.doctor=_doctor
-        self.staff=_staff
-        self.department=_department
-        self.nbBeds=_nb_beds
-        self.number=_number
+    def __init__(self, _doctor=None,
+                 _staff=None, _id=None,
+                 _patients=None, _nb_beds=None, _number=None, _department=None):
+        self.doctor = _doctor
+        self.staff = _staff
+        self.department = _department
+        self.nbBeds = _nb_beds
+        self.number = _number
         self.patients = _patients
-        self.id=_id
-
+        self.id = _id
 
     def todict(self):
         d = {"number": self.number,
              "id": self.id,
-             "nbBeds":self.nbBeds,
-             "doctor":self.doctor,
+             "nbBeds": self.nbBeds,
+             "doctor": self.doctor,
              "patients": self.patients,
              "staff": self.staff,
-             "department":self.department
+             "department": self.department
 
              }
         return d
@@ -176,24 +170,25 @@ class Room:
         self.number = d["number"]
         self.patients = d["patients"]
         self.staff = d["staff"]
-        self.nbBeds=d["nbBeds"]
+        self.nbBeds = d["nbBeds"]
 
     def __str__(self):
-        return str(self.id)+"  room number " +str(self.number)
+        return str(self.id) + "  room number " + str(self.number)
 
 
 class Alert:
-    def __init__(self , _id=None ,_priority=None ,  _doctor=None , _user=None , _createdTime=None , _responseTime=None , _content=None , _response=None ):
-        self.doctor =_doctor
-        self.id=_id
-        self.user=_user
-        self.createdTime=_createdTime
-        self.responseTime=_responseTime
-        self.content=_content
-        self.response=_response
-        self.priority =_priority
+    def __init__(self, _id=None, _priority=None, _doctor=None, _user=None, _createdTime=None, _responseTime=None,
+                 _content=None, _response=None):
+        self.doctor = _doctor
+        self.id = _id
+        self.user = _user
+        self.createdTime = _createdTime
+        self.responseTime = _responseTime
+        self.content = _content
+        self.response = _response
+        self.priority = _priority
 
-    def fromdict(self,d):
+    def fromdict(self, d):
         self.doctor = d['doctor']
         self.user = d['user']
         self.id = d['id']
@@ -202,6 +197,7 @@ class Alert:
         self.content = d['content']
         self.response = d['response']
         self.priority = d['priority']
+
     def todict(self):
         d = {"responseTime": self.responseTime,
              "createdTime": self.createdTime,
@@ -213,5 +209,3 @@ class Alert:
              "response": self.response
              }
         return d
-
-

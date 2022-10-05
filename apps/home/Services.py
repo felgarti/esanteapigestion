@@ -60,10 +60,14 @@ def edit_user(_id=None, _email=None, _nom=None, _prenom=None, _mobile=None, _add
 
 
 def delete_user(id):
-    u = auth.get_user_by_email(get_user(id).email)
+    # u = auth.get_user_by_email(get_user(id).email)
     doc = db.collection(u'users').document(id).delete()
-    print("deleted successfully")
 
+def check_email(email):
+    for i in get_users():
+        if i.email.strip()==email.strip():
+            return False
+    return True
 
 #################################################################################
 
@@ -73,7 +77,7 @@ def create_doctor(_nom=None, _email=None, _prenom=None, _mobile=None, _address=N
     user = create_user(_nom=_nom,_role="doctor" ,  _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
                        _admitDate=_admitDate, _profilepic=_profilepic, _email=_email)
     doc_ref = db.collection(u'doctors').document()
-    print("rooms " ,_rooms)
+
     doctor = Doctor(_user=user, _id=doc_ref.id, _department=_department, _rooms=_rooms, _specialty=_specialty)
     doc_ref.set(doctor.todict())
     if doctor.rooms!=[]:
@@ -87,10 +91,10 @@ def create_doctor(_nom=None, _email=None, _prenom=None, _mobile=None, _address=N
 
 def get_doctor(id):
     doc = db.collection('doctors').document(id).get()
-    print(" this is the get doc id "  , id)
+
     if not doc.exists:
         print(u'No such document!')
-        print(" this is the get doc id 2 "  , id)
+
         return
     doctor = Doctor()
     doctor.fromdict(doc.to_dict())
@@ -143,7 +147,7 @@ def delete_doctor(id):
                   _nbBeds=room.nbBeds, _doctor=room.doctor, _number=room.number)
     userid = doctor.user.id
     delete_user(userid)
-    print(id)
+
     doc = db.collection(u'doctors').document(id).delete()
     print("deleted successfully")
 
@@ -188,14 +192,14 @@ def edit_patient(_id=None, _nom=None, _email=None , _prenom=None, _mobile=None, 
     if(patient1.room.strip()!=patient.room.strip()):
         oldroom=get_room(patient1.room)
         if oldroom!=None :
-            print("old room   : ", oldroom.number)
-            print(oldroom.patients)
+
+
             oldroom.patients.remove(patient.id)
-            print(oldroom.patients)
+
             oldroom=edit_room(_id=oldroom.id , _patients=oldroom.patients , _department=oldroom.department ,_staff=oldroom.staff , _nbBeds=oldroom.nbBeds , _doctor=oldroom.doctor , _number=oldroom.number)
         newroom = get_room(patient.room)
         if newroom !=None :
-            print("new room   : ", newroom.number)
+
 
             newroom.patients.append(patient.id)
             newroom = edit_room(_id=newroom.id, _patients=newroom.patients, _department=newroom.department,
@@ -261,6 +265,7 @@ def create_staff(_nom=None,_password=None ,_role=None ,  _prenom=None, _email=No
 def edit_staff(_id=None,  _nom=None, _prenom=None, _email=None,_mobile=None, _address=None, _status=None, _admitDate=None,
                _profilepic=None,  _department=None, _rooms=[]):
     staff1 = get_staff(_id)
+    print(_id)
     userid = staff1.user.id
 
     user = edit_user(_id=userid, _nom=_nom, _prenom=_prenom, _mobile=_mobile, _address=_address, _status=_status,
@@ -277,7 +282,7 @@ def edit_staff(_id=None,  _nom=None, _prenom=None, _email=None,_mobile=None, _ad
                                 _number=room.number)
         for oldroom in list(set(staff1.rooms) - set(staff.rooms)):
             room=get_room(oldroom)
-            print("    staffid :", staff.id, "    roomid :", room.id)
+
             if staff.id in  room.staff :
                 room.staff.remove(staff.id)
 

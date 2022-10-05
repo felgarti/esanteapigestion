@@ -25,8 +25,8 @@
             <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
               <div class="card card-plain mt-8">
                 <div class="card-header pb-0 text-left bg-transparent">
-                  <h3 class="font-weight-bolder text-info text-gradient">Welcome back</h3>
-                  <p class="mb-0">Enter your email and password to sign in</p>
+                  <h3 class="font-weight-bolder text-danger text-gradient ">Bienvenue</h3>
+                  <p class="mb-0">Saisissez votre email et mot de passe afin de vous connecter </p>
                 </div>
                 <div class="card-body">
                   <form role="form" action="{% url 'login' %}" method="post">
@@ -34,16 +34,13 @@
                     <div class="mb-3">
                       <input type="email" class="form-control" placeholder="Email" name="email" aria-label="Email" aria-describedby="email-addon">
                     </div>
-                    <label>Password</label>
+                    <label>Mot de passe</label>
                     <div class="mb-3">
-                      <input type="password" class="form-control" placeholder="Password" name="password" aria-label="Password" aria-describedby="password-addon">
+                      <input type="password" class="form-control" placeholder="Mot de passe " name="password" aria-label="Password" aria-describedby="password-addon">
                     </div>
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="rememberMe" checked="">
-                      <label class="form-check-label" for="rememberMe">Remember me</label>
-                    </div>
+
                     <div class="text-center">
-                      <button type="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Sign in</button>
+                      <button type="submit" class="btn bg-gradient-danger w-100 mt-4 mb-0">Se connecter</button>
                     </div>
                   </form>
                 </div>
@@ -52,7 +49,7 @@
             </div>
             <div class="col-md-6">
               <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
-                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image:url('{{ ASSETS_ROOT }}/img/curved-images/curved6.jpg')"></div>
+                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image:url('{{ ASSETS_ROOT }}/img/signinimg.jpg')"></div>
               </div>
             </div>
           </div>

@@ -18,6 +18,7 @@ urlpatterns = [
     path('patients.html', views.patients),
     path('staffs.html', views.staffs),
     path('rooms.html', views.rooms),
+    path('profile/', views.profile , name='profile'),
     path('patientProfile.html', views.patientProfile),
     path('doctorProfile.html', views.doctorProfile),
     path('staffProfile.html', views.staffProfile),

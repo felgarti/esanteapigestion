@@ -169,7 +169,8 @@
                                 <div class="d-flex px-2 py-1">
                                     <div>
                                         <a href="patientProfile.html?id={{i.id}}">
-                                            <img src="{{ ASSETS_ROOT }}/img/marie.jpg" class="avatar avatar-sm me-3"
+                                            <img src="{{ ASSETS_ROOT }}/img/{{i.user.profile_pic}}"
+                                                 class="avatar avatar-sm me-3"
                                                  alt="xd"> </a>
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
@@ -226,64 +227,70 @@
 
 
             </div>
+
             <div class="card-body overflow-auto " style="height: 200px;width:auto;">
                 {% for alert in alerts %}
 
-                    <div class="alert row alert-light d-flex p-2 h-25 w-100   "
-                         style="max-width:100%; " role="alert">
+                <div class="alert row alert-light d-flex p-2 h-25 w-100   "
+                     style="max-width:100%; " role="alert">
 
-                        <div class="col-sm-1">
-                            {% if alert.priority == "1" %}
-                            <i class="fa fa-circle" style="color:red;" aria-hidden="true"></i>
-                            {% else %}
-                            <i class="fa fa-circle" style="color:grey;" aria-hidden="true"></i>
-                            {% endif %}
-                        </div>
-                        <div class="col-sm-7  text-sm text-truncate text-left ">
-                            {{alert.content}}
-                        </div>
+                    <div class="col-sm-1">
+                        {% if alert.priority == "1" %}
+                        <i class="fa fa-circle" style="color:red;" aria-hidden="true"></i>
+                        {% else %}
+                        <i class="fa fa-circle" style="color:grey;" aria-hidden="true"></i>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-7  text-sm text-truncate text-left ">
+                        {{alert.content}}
+                    </div>
 
- {% if role == "doctor" %}
-                        <div class="col-sm-1">
+                    {% if role == "doctor" %}
+                    <div class="col-sm-1">
 
-                            <a href="respondAlert.html?id={{alert.id}}">
+                        <a href="respondAlert.html?id={{alert.id}}">
                             <i class="fa fa-reply" aria-hidden="true"></i>
-                                 </a>
-
-                        </div>
-
-                        <div class="col-sm-1">
-                            <a href="delete_alert?id={{alert.id}}" onClick="alert('Are you sure ?')"
-                                data-toggle="tooltip"
-                               data-original-title="delete alert">
-                                <i class="fa fa-times-circle" aria-hidden="true"></i>
-                            </a>
-                        </div>
-                          {% endif %}
-                          <div class="col-sm-1">
-
-
-
-                              {% if alert.response != "" and alert.response != None %}
-                         <i class="fa fa-check-circle-o" style="color:green;" aria-hidden="true"></i>
-
-
-                              {% endif %}
-                        </div>
-
-
+                        </a>
 
                     </div>
+
+                    <div class="col-sm-1">
+                        <a href="delete_alert?id={{alert.id}}" onClick="alert('Are you sure ?')"
+                           data-toggle="tooltip"
+                           data-original-title="delete alert">
+                            <i class="fa fa-times-circle" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    <div class="col-sm-1">
+
+
+                        {% if alert.response != "" and alert.response != None %}
+                        <i class="fa fa-check-circle-o" style="color:green;" aria-hidden="true"></i>
+
+
+                        {% endif %}
+                    </div>
+
+
+                </div>
 
                 {% endfor %}
 
 
             </div>
 
+
         </div>
     </div>
 </div>
 </div>
+
+
+<script type="text/javascript" >
+setInterval("location.reload(true);", 20000);
+
+</script>
 
 {% include "includes/footer.html" %}
 
@@ -464,6 +471,7 @@
         },
       },
     });
+
 
 
 
